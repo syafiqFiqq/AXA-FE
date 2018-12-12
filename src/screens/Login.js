@@ -1,16 +1,25 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import AuthService from "../components/AuthService";
 import "./Login.css";
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
 
+    this.Auth = new AuthService();
+
     this.state = {
       username: "",
       password: "",
       isLogedIn: false
     };
+  }
+
+  componentWillMount() {
+    if (this.Auth.loggedIn()) {
+      this.props.history.replace("/");
+    }
   }
 
   validateForm() {
@@ -25,8 +34,13 @@ export default class Login extends Component {
 
   handleFormSubmit = e => {
     e.preventDefault();
-    //Implement login here
-    this.props.history.replace("/");
+    this.Auth.login(this.state.username, this.state.password)
+      .then(res => {
+        this.props.history.replace("/");
+      })
+      .catch(err => {
+        alert(err);
+      });
   };
 
   render() {
